@@ -180,7 +180,7 @@ plt.show()
 ```
 
 
-![png](simple-neural-network_files/simple-neural-network_17_0.png)
+![png](images/simple-neural-network_17_0.png)
 
 
 
@@ -252,7 +252,7 @@ plt.show()
 ```
 
 
-![png](simple-neural-network_files/simple-neural-network_24_0.png)
+![png](images/simple-neural-network_24_0.png)
 
 
 
