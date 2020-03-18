@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Simple Neural Network</title>
+	
+	<script>
+		
+		document.addEventListener("DOMContentLoaded", () => {
+		  
+			function hello() {
+				console.log('hello');
+				
+			}
+			var test = 100;
+			hello();
+		  
+		});
+		
+	</script>
+	
+	<style type="text/css" rel="stylesheet">
+		
+		document, body {
+			font-family: Arial;
+			margin: 0;
+			padding: 0;
+			color: #333;
+		}
+		
+		#plot {
+			width: 640px;
+			height: 480px;
+			margin: 0 auto;
+			border: 3px #f0f0f0 solid;
+		}
+		
+		#epochs {
+			width: 500px;
+			border: 1px #e0e0e0 solid;
+			padding: 7px 12px;
+			font-size: 14px;
+			margin: 15px auto;
+		}
+		
+	</style>
+	
+	<script type="text/javascript" src="plotly-latest.min.js"></script>
+
+		
+		
+<body>
+<div id="content">
+	
+	<div id="plot"></div>
+	<div id="epochs"></div>
+	
+	
+		<script>
+
+			class SimpleNeuralNetwork {
+			
+				// CONSTRUCTOR
+				constructor() {
+				
+					this.w1 = Math.random();
+					this.w2 = Math.random();
+					this.w3 = Math.random();
+					this.w4 = Math.random();
+					this.w5 = Math.random();
+					this.w6 = Math.random();
+					this.w7 = Math.random();
+					this.w8 = Math.random();
+					this.w9 = Math.random();				
+					this.b_n1 = Math.random();
+					this.b_n2 = Math.random();
+					this.b_n3 = Math.random();
+					this.b_y_hat = Math.random();
+								
+				}		
+			
+	 			// SIGMOID
+				sigmoid(x) { return 1 / (1 + Math.E**-x); }			
+	    		sigmoid_der(x) { return this.sigmoid(x) * (1 - this.sigmoid(x)); } 
+			
+				// MEAN SQUARED ERROR
+				mean_squared_error(y_true, y_pred) {
+					const result = [];				
+					for (let i = 0; i < y_true.length; i++) {				
+						result.push( (y_true[i] - y_pred[i])**2 );
+					}							
+					const sum = result.reduce((a, b) => a + b, 0 );			
+					return sum / y_true.length;						
+				}
+			
+				// FEEDFORWARD
+				feedforward(x) {
+					this.n1 = this.sigmoid(x[0]*this.w1 + x[1]*this.w2 + this.b_n1);
+					this.n2 = this.sigmoid(x[0]*this.w3 + x[1]*this.w4 + this.b_n2);
+					this.n3 = this.sigmoid(x[0]*this.w5 + x[1]*this.w6 + this.b_n3);
+					this.y_hat = this.sigmoid(this.n1*this.w7 + this.n2*this.w8 + this.n3*this.w9 + this.b_y_hat);
+				
+				
+				}
+			
+				// BACKPROPAGATION
+				backpropagation(x, y, lr) {   
+				    // We use calculate some values here to use them later
+					let y_hat_der = (-2 * (y-this.y_hat) * this.sigmoid_der(this.y_hat));
+					let z_w7_der = this.w7 * this.sigmoid_der(this.n1);
+					let z_w8_der = this.w8 * this.sigmoid_der(this.n2);
+					let z_w9_der = this.w9 * this.sigmoid_der(this.n3);             
+				    // Biases
+					this.b_n1    -= lr * y_hat_der * z_w7_der;
+					this.b_n2    -= lr * y_hat_der * z_w8_der;
+					this.b_n3    -= lr * y_hat_der * z_w9_der;  
+					this.b_y_hat -= lr * y_hat_der;              
+				    // Weights
+					this.w7 -= lr * y_hat_der * this.n1;
+					this.w8 -= lr * y_hat_der * this.n2;
+					this.w9 -= lr * y_hat_der * this.n3;
+					this.w1 -= lr * y_hat_der * z_w7_der * x[0];
+					this.w2 -= lr * y_hat_der * z_w7_der * x[1];
+					this.w3 -= lr * y_hat_der * z_w8_der * x[0];
+					this.w4 -= lr * y_hat_der * z_w8_der * x[1];
+					this.w5 -= lr * y_hat_der * z_w9_der * x[0];
+					this.w6 -= lr * y_hat_der * z_w9_der * x[1];
+				
+				}
+			
+				// FIT
+				fit(X, y, epoch=10, lr=0.01) {
+				    const mse_list = [];			
+
+				
+				    for (let i = 0; i < epoch; i++) {				
+						const y_pred = this.predict(X);
+				        let mse = this.mean_squared_error(y, y_pred);
+				        mse_list.push(mse);		
+					
+				        console.log('Epoch: '+(i+1)+' / '+epoch+', MSE: '+mse );
+						
+						const output = document.getElementById("epochs");
+						output.innerText = 'Epoch: '+(i+1)+' / '+epoch+', MSE: '+mse ;
+            
+				        for (let j = 0; j < X.length; j++) {
+				            this.feedforward(X[j]);
+				            this.backpropagation(X[j], y[j], lr);
+						}
+					}         
+				    return mse_list;
+				}
+    
+				// PREDICT
+				predict(X) {
+				    const result = [];       
+				    for(let i = 0; i < X.length; i++) {						         
+				        this.feedforward(X[i]);
+				        result.push(this.y_hat);					    
+					}
+					return result;		
+				}	
+					
+			}
+		
+			const X = new Array(
+				[0.08477814, 0.0300686 ],
+				[0.32257486, 0.03907763],
+				[0.18774224, 0.01717063],
+				[0.19504559, 0.02992811],
+				[0.14092909, 0.02661475],
+				[0.16107364, 0.03019804],
+				[0.44423525, 0.0511902 ],
+				[0.15118412, 0.03744674],
+				[0.03030303, 0.02603317],
+				[0.03879946, 0.02623196],
+				[0.17241831, 0.03069166],
+				[0.15210135, 0.02945546],
+				[0.21810734, 0.03474563],
+				[0.13889464, 0.02633673],
+				[0.11539151, 0.02099445],
+				[0.30968538, 0.04297108],
+				[0.14843244, 0.02954321],
+				[0.26521703, 0.02739365],
+				[0.1430463 , 0.02896584],
+				[0.13333609, 0.0293266 ]);
+		
+			const y = new Array(
+				[0.13670253],
+	       	 	[0.77216383],
+	       	 	[0.29134107],
+	       	 	[0.12391908],
+	       	 	[0.10783667],
+	       	 	[0.47505165],
+	       	 	[0.82989555],
+	       	 	[0.17010445],
+	       	 	[0.15237257],
+	       	 	[0.16041377],
+	       	 	[0.15835192],
+	       	 	[0.34494909],
+	       	 	[0.23010421],
+	       	 	[0.14103241],
+	       	 	[0.13814582],
+	       	 	[0.29340291],
+	       	 	[0.10495008],
+	       	 	[0.30515544],
+	       	 	[0.1195892 ],
+	       	 	[0.17154775]);
+		
+			nn = new SimpleNeuralNetwork();		
+		
+			const mse = nn.fit(X, y, epoch=100, lr=0.05);
+
+			let x = [];
+			
+			for(i=1; i<=mse.length;i++){ x.push(i); }
+		
+		var trace1 = {
+		  x: x,
+		  y: mse,
+		  type: 'scatter'
+		};
+		
+		
+
+		Plotly.newPlot('plot', [trace1]);
+		
+	
+		</script>
+	
+</div>
+</body>
+</head>
+</html>
