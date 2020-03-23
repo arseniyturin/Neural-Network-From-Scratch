@@ -70,7 +70,15 @@ class SimpleNeuralNetwork:
     
     def __init__(self): 
         
-        # Initial Weights. I name each weights for illustration purposes
+        '''        
+        Initial weights and biases assigned random values ranging '0' to '1'. 
+        We have a total of 9 weights and 4 biases.
+        6 weights are coming in the hidden layer, two for each neuron, hence 3 x 2 = 6.
+        The rest of the weights are coming into the output layer.
+        Same story for the biases. Each bias is attached to the neuron in the hidden layer
+        and output layer.
+        '''
+        # Weights
         self.w1, \
         self.w2, \
         self.w3, \
@@ -81,15 +89,23 @@ class SimpleNeuralNetwork:
         self.w8, \
         self.w9 = np.random.rand(9)
 
-        # Initial Biases. I name each bias for illustration purposes
+        # Biases
         self.b_n1, \
         self.b_n2, \
         self.b_n3, \
         self.b_y_hat = np.random.rand(4) 
 
+    # Activation function for the neurons
+    # Each neuron IS an actually activation function itself
+    # sigmoid is for forward propagation, sigmoid derivative is for back propagation
     def sigmoid(self, x): return 1 / (1 + np.e**-x)
     def sigmoid_der(self, x): return self.sigmoid(x) * (1 - self.sigmoid(x))
 
+    
+    '''
+    Feedforward function produces result of the network prediction for each sample.
+    First we find neurons' values for hidden layer, then for output layer.
+    '''
     def feedforward(self, x):
 
         # x[0], x[1] - our features
@@ -100,6 +116,18 @@ class SimpleNeuralNetwork:
 
         self.y_hat = self.sigmoid(self.n1*self.w7 + self.n2*self.w8 + self.n3*self.w9 + self.b_y_hat)
 
+    
+    '''
+    Backpropagation updates all the weights and biases of the network.
+    By using Gradient Descent technique, each trainable parameter (weight or bias)
+    is changing a little bit towards minimum of MSE.
+    Unlike forward propagation, we tweak our parameters starting
+    from the right end of the network, meaning first we update
+    weights and biases for output layer, then for the hidden.
+    If we had more than one hidden layer, we would go over them 
+    is similar fashion, 
+    like this: "output layer" => "hidden layer 2" => "hidden layer 1"
+    '''
     def backpropagation(self, x, y):
 
         # We calculate some values here to use them later
@@ -126,24 +154,34 @@ class SimpleNeuralNetwork:
         self.w5 -= self.lr * y_hat_der * z_w9_der * x[0]
         self.w6 -= self.lr * y_hat_der * z_w9_der * x[1]
         
+    
+    '''
+    Training process is the combination of forward and back propagations.
+    '''
     def fit(self, X, y, epoch=10, lr=0.01):
 
         mse_list = []
         self.lr = lr
 
+        # Loop to go over epochs. Each epoch train network on all available data.
+        # We also check MSE and store it to visualize training process
         for i in range(epoch):
-
             mse = mean_squared_error(y, self.predict(X))
             mse_list.append(mse)
             print('Epoch: {} / {}, MSE: {}'.format(i+1, epoch, round(mse, 4)), end='\r')
 
+            # Loop to go over each training example for current epoch
             for j in range(len(X)):
-
                 self.feedforward(X[j])
                 self.backpropagation(X[j], y[j][0]) 
 
         return mse_list
 
+    '''
+    This function is very similar to feed forward,
+    it's in fact uses 'feedforward' function to make predictions.
+    The only difference is that we predict outcome for all samples.
+    '''
     def predict(self, X):
 
         result = []
@@ -154,6 +192,8 @@ class SimpleNeuralNetwork:
 
         return result
 ```
+
+## Testing Neural Network
 
 
 ```python
@@ -201,7 +241,7 @@ mse
 
 
 
-## 3. Keras Neural Network
+## 2. Keras Neural Network
 
 
 ```python
@@ -295,13 +335,14 @@ print("R-squared Keras: ", round(r2_score(y_test, y_pred_keras), 3))
     R-squared Keras:  0.502
 
 
-## Conclusion
+# Conclusion
 
-Our neural network was able to predict with similar accuracy as Keras version.
+Simple neural network has the same capabilities as the Keras analog, and was able to produce identical accuracy. That means it's working correctly and is efficient enough.
 
-## Next Steps
+# Next Steps
 
 There are plenty of things we can do with our neural network, such as:
-- rewrite feedforward and backpropagation to the matrix form
-- add layers and neurons
-- use different activation functions
+- Rewrite feedforward and backpropagation to the matrix form
+- Make adding more than one layers and as many neurons as we want possible
+- Add different activation functions, like Tanh or ReLu
+- Add different cost function, like a binary cross-entropy for classification problems
