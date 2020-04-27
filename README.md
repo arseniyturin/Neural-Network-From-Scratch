@@ -1,3 +1,6 @@
+# Read This First!
+This notebook is the supplement to the article I'm going to write on medium.com. Therefore some important explanations (ie derivatives) are not included here and it might be difficult to understand backpropagation function. I will post a link to the article here after I publish it, so stay tuned.
+
 # Neural Network From Scratch
 
 This notebook can help you to understand how to build neural network from scratch.
@@ -7,10 +10,10 @@ Our neural network would have three layers:
 2. Hidden layer with 3 neurons
 3. output layer
 
-All the layers and their parameters are hardcoded, which can be viewed as limitation, but for illustration purposes it's the ideal set up. The limitations for the network are following: 
+All the layers and their parameters are hardcoded, which can be viewed as limitation, but for the illustration purposes it's the ideal set up. The limitations for the network are following: 
 1. We have predetermined input size. In our case it's two features, so input size is 2
 2. We have one hidden layer has 3 neurons, we cannot add more layers to the network
-3. We have predetermined output size, because we a working on regression problem
+3. Since we are going to solve linear regression problem, we have a predetermined output size which is equal 1.
 
 It is possible to change every hardcoded parameters manually, so I encourage you to play with the code, change parts, optimize it.
 
@@ -341,8 +344,8 @@ Simple neural network has the same capabilities as the Keras analog, and was abl
 
 # Next Steps
 
-There are plenty of things we can do with our neural network, such as:
-- Rewrite feedforward and backpropagation to the matrix form
-- Make adding more than one layers and as many neurons as we want possible
-- Add different activation functions, like Tanh or ReLu
-- Add different cost function, like a binary cross-entropy for classification problems
+The neural networks has certain limitations and to make it more flexible and powerful we can add following features: 
+
+1. ability to add unlimited amount of hidden layers and neurons
+2. add different activation functions (ex: ReLu, Tanh)
+3. add different loss functions (ex: binary cross entropy)
