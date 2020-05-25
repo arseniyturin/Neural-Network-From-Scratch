@@ -1,6 +1,3 @@
-# Read This First!
-This notebook is the supplement to the article I'm going to write on medium.com. Therefore some important explanations (ie derivatives) are not included here and it might be difficult to understand backpropagation function. I will post a link to the article here after I publish it, so stay tuned.
-
 # Neural Network From Scratch
 
 This notebook can help you to understand how to build neural network from scratch.
@@ -10,10 +7,10 @@ Our neural network would have three layers:
 2. Hidden layer with 3 neurons
 3. output layer
 
-All the layers and their parameters are hardcoded, which can be viewed as limitation, but for the illustration purposes it's the ideal set up. The limitations for the network are following: 
+All the layers and their parameters are hardcoded, which can be viewed as limitation, but for illustration purposes it's the ideal set up. The limitations for the network are following: 
 1. We have predetermined input size. In our case it's two features, so input size is 2
 2. We have one hidden layer has 3 neurons, we cannot add more layers to the network
-3. Since we are going to solve linear regression problem, we have a predetermined output size which is equal 1.
+3. We have predetermined output size, because we a working on regression problem
 
 It is possible to change every hardcoded parameters manually, so I encourage you to play with the code, change parts, optimize it.
 
@@ -69,6 +66,18 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 
 ```python
+def feedforward(x1, x2):
+
+        n1    = sigmoid(x1*w1 + x2*w2 + b1)
+        n2    = sigmoid(x1*w3 + x2*w4 + b2)
+        n3    = sigmoid(x1*w5 + x2*w6 + b3)
+        y_hat = sigmoid(n1*w7 + n2*w8 + n3*w9 + b4)
+        
+        return y_hat
+```
+
+
+```python
 class SimpleNeuralNetwork:
     
     def __init__(self): 
@@ -111,12 +120,11 @@ class SimpleNeuralNetwork:
     '''
     def feedforward(self, x):
 
-        # x[0], x[1] - our features
+        # x[0], x[1] - features
         # n* - neurons in the hidden layer, y_hat - predicted value
-        self.n1 =    self.sigmoid(x[0]*self.w1 + x[1]*self.w2 + self.b_n1)
-        self.n2 =    self.sigmoid(x[0]*self.w3 + x[1]*self.w4 + self.b_n2)
-        self.n3 =    self.sigmoid(x[0]*self.w5 + x[1]*self.w6 + self.b_n3)
-
+        self.n1    = self.sigmoid(x[0]*self.w1 + x[1]*self.w2 + self.b_n1)
+        self.n2    = self.sigmoid(x[0]*self.w3 + x[1]*self.w4 + self.b_n2)
+        self.n3    = self.sigmoid(x[0]*self.w5 + x[1]*self.w6 + self.b_n3)
         self.y_hat = self.sigmoid(self.n1*self.w7 + self.n2*self.w8 + self.n3*self.w9 + self.b_y_hat)
 
     
@@ -134,15 +142,15 @@ class SimpleNeuralNetwork:
     def backpropagation(self, x, y):
 
         # We calculate some values here to use them later
-        y_hat_der = (-2 * (y-self.y_hat) * self.sigmoid_der(self.y_hat))
-        z_w7_der = self.w7 * self.sigmoid_der(self.n1)
-        z_w8_der = self.w8 * self.sigmoid_der(self.n2)
-        z_w9_der = self.w9 * self.sigmoid_der(self.n3)
+        y_hat_der = (-2 * (y-self.y_hat) * self.sigmoid_der(self.n1*self.w7 + self.n2*self.w8 + self.n3*self.w9 + self.b_y_hat))
+        n1_der = self.w7 * self.sigmoid_der(x[0]*self.w1 + x[1]*self.w2 + self.b_n1)
+        n2_der = self.w8 * self.sigmoid_der(x[0]*self.w3 + x[1]*self.w4 + self.b_n2)
+        n3_der = self.w9 * self.sigmoid_der(x[0]*self.w5 + x[1]*self.w6 + self.b_n3)
 
         # Biases
-        self.b_n1    -= self.lr * y_hat_der * z_w7_der
-        self.b_n2    -= self.lr * y_hat_der * z_w8_der
-        self.b_n3    -= self.lr * y_hat_der * z_w9_der
+        self.b_n1    -= self.lr * y_hat_der * n1_der
+        self.b_n2    -= self.lr * y_hat_der * n2_der
+        self.b_n3    -= self.lr * y_hat_der * n3_der
         self.b_y_hat -= self.lr * y_hat_der
 
         # Weights
@@ -150,12 +158,12 @@ class SimpleNeuralNetwork:
         self.w8 -= self.lr * y_hat_der * self.n2
         self.w9 -= self.lr * y_hat_der * self.n3
         
-        self.w1 -= self.lr * y_hat_der * z_w7_der * x[0]
-        self.w2 -= self.lr * y_hat_der * z_w7_der * x[1]
-        self.w3 -= self.lr * y_hat_der * z_w8_der * x[0]
-        self.w4 -= self.lr * y_hat_der * z_w8_der * x[1]
-        self.w5 -= self.lr * y_hat_der * z_w9_der * x[0]
-        self.w6 -= self.lr * y_hat_der * z_w9_der * x[1]
+        self.w1 -= self.lr * y_hat_der * n1_der * x[0]
+        self.w2 -= self.lr * y_hat_der * n1_der * x[1]
+        self.w3 -= self.lr * y_hat_der * n2_der * x[0]
+        self.w4 -= self.lr * y_hat_der * n2_der * x[1]
+        self.w5 -= self.lr * y_hat_der * n3_der * x[0]
+        self.w6 -= self.lr * y_hat_der * n3_der * x[1]
         
     
     '''
@@ -171,7 +179,7 @@ class SimpleNeuralNetwork:
         for i in range(epoch):
             mse = mean_squared_error(y, self.predict(X))
             mse_list.append(mse)
-            print('Epoch: {} / {}, MSE: {}'.format(i+1, epoch, round(mse, 4)), end='\r')
+            print(f'Epoch: {i+1} / {epoch}, MSE: {round(mse, 4)}', end='\r')
 
             # Loop to go over each training example for current epoch
             for j in range(len(X)):
@@ -205,10 +213,10 @@ model = SimpleNeuralNetwork()
 
 
 ```python
-history = model.fit(X_train, y_train, epoch=100, lr=0.05)
+history = model2.fit(X_train, y_train, epoch=100, lr=0.05)
 ```
 
-    Epoch: 100 / 100, MSE: 0.0285
+    Epoch: 100 / 100, MSE: 0.0286
 
 
 ```python
@@ -240,7 +248,7 @@ mse
 
 
 
-    0.028357368457188573
+    0.028523506310791816
 
 
 
@@ -344,8 +352,8 @@ Simple neural network has the same capabilities as the Keras analog, and was abl
 
 # Next Steps
 
-The neural networks has certain limitations and to make it more flexible and powerful we can add following features: 
-
-1. ability to add unlimited amount of hidden layers and neurons
-2. add different activation functions (ex: ReLu, Tanh)
-3. add different loss functions (ex: binary cross entropy)
+There are plenty of things we can do with our neural network, such as:
+- Rewrite feedforward and backpropagation to the matrix form
+- Make adding more than one layers and as many neurons as we want possible
+- Add different activation functions, like Tanh or ReLu
+- Add different cost function, like a binary cross-entropy for classification problems
