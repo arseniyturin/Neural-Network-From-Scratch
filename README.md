@@ -65,17 +65,6 @@ X_train, X_test, y_train, y_test = train_test_split(
 ## 1. Simple Neural Network
 
 
-```python
-def feedforward(x1, x2):
-
-        n1    = sigmoid(x1*w1 + x2*w2 + b1)
-        n2    = sigmoid(x1*w3 + x2*w4 + b2)
-        n3    = sigmoid(x1*w5 + x2*w6 + b3)
-        y_hat = sigmoid(n1*w7 + n2*w8 + n3*w9 + b4)
-        
-        return y_hat
-```
-
 
 ```python
 class SimpleNeuralNetwork:
