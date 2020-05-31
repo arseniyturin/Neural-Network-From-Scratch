@@ -7,6 +7,8 @@ Our neural network would have three layers:
 2. Hidden layer with 3 neurons
 3. output layer
 
+<img src="images/nn.png" alt="Neural Network Architecture" />
+
 All the layers and their parameters are hardcoded, which can be viewed as limitation, but for illustration purposes it's the ideal set up. The limitations for the network are following: 
 1. We have predetermined input size. In our case it's two features, so input size is 2
 2. We have one hidden layer has 3 neurons, we cannot add more layers to the network
@@ -63,7 +65,6 @@ X_train, X_test, y_train, y_test = train_test_split(
 ```
 
 ## 1. Simple Neural Network
-
 
 
 ```python
