@@ -1,5 +1,7 @@
 # Neural Network From Scratch
 
+Article on Medium: [How to Build Neural Network from Scratch](https://towardsdatascience.com/how-to-build-neural-network-from-scratch-d202b13d52c1)
+
 This notebook can help you to understand how to build neural network from scratch.
 
 Our neural network would have three layers:
